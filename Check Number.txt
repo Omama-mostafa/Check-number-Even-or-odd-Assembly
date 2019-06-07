@@ -1,0 +1,57 @@
+.data
+    myArray: .space 48
+    message1: .asciiz "Enter Data : \n"
+    message2: .asciiz "\nSum = "
+
+.text
+main:   
+    li $t0 , 0          #index
+   
+    li $v0 , 4          #ask data from user
+    la $a0 , message1
+    syscall 
+
+while:                  #Loop To Store data
+    beq $t0 , 48 , ConWhile
+   
+    li $v0 , 5
+    syscall
+    sw $v0 , myArray($t0)
+    
+    addi $t0 , $t0 ,4
+    j while
+
+ConWhile:
+     li $t0 , 0
+
+check_odd:   
+    lw $t1 , myArray($t0)
+    
+    rem $t2 , $t1 , 2
+    
+    beq $t2 , 0 , Continue
+    beq $t0 , 48 , Print
+    
+    add $s0 , $s0 , $t1       # add odd values
+
+    addi $t0 , $t0 , 4        #i++
+    j check_odd
+
+Continue:
+   addi $t0 , $t0 , 4         #i++ and continue
+   b check_odd    
+
+Print:                        #print sum
+   li $v0 , 4                 
+   la $a0 , message2
+   syscall 
+   li $v0 , 1
+   move $a0 , $s0
+   syscall
+   b Exit
+
+Exit:
+   li $v0 , 10
+   syscall
+
+.end main
